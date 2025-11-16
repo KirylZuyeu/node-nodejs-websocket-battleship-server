@@ -1,3 +1,11 @@
+#### Не самая чистая работа - в рамках того времени что есть, как есть :)
+
+#### Если нужны будут разьяснения по запуску кода можно смело писать в:
+
+## Tg: @KirylZuyeu
+## Discord: KirylZuyeu#1555
+
+
 # node-nodejs-websocket-battleship-server (RSSchool NodeJS websocket task template)
 
 > Static http server and base task packages.
