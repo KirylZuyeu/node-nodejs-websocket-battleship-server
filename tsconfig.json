@@ -37,9 +37,11 @@
     "isolatedModules": false,
     "noUncheckedSideEffectImports": false,
     "moduleDetection": "force",
-    "skipLibCheck": true,
+    "skipLibCheck": false,
     "rootDir": "src",
     "outDir": "dist",
+
+    "noImplicitAny": false,
   },
   "include": ["src/**/*", "src/index.ts"]
 }
