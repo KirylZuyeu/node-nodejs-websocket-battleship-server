@@ -1,26 +1,9 @@
 import { BOARD_SIZE } from "../constants/constants";
-
-function commitTempResultsToShots(shots: any, temporaryAttackResults: any) {
-
-    temporaryAttackResults.forEach((cell: { x: number, y: number, status: string }) => {
-
-        for (let i = cell.x - 1; i <= cell.x + 1; i++) {
-            for (let j = cell.y - 1; j <= cell.y + 1; j++) {
-
-
-                if (i >= 0 && i < BOARD_SIZE && j >= 0 && j < BOARD_SIZE) {
-
-
-                    if (shots[j][i] !== 'killed' && shots[j][i] !== 'shot' && shots[j][i] !== 'miss') {
-                        temporaryAttackResults.push({ x: i, y: j, status: 'miss' });
-                        shots[j][i] = 'miss';
-                    }
-                }
-            }
-        }
-    });
+function getRandomCoords(): [number, number] {
+    const x = Math.floor(Math.random() * BOARD_SIZE);
+    const y = Math.floor(Math.random() * BOARD_SIZE);
+    return [x, y];
 }
-
 
 function evaluateShot(
     shipsMatrix: any,
@@ -48,14 +31,26 @@ function evaluateShot(
             temporaryAttackResults.push({ x: cellX, y: cellY, status: 'killed' });
         }
 
-        commitTempResultsToShots(shots, temporaryAttackResults);
+        const killedCellsCopy = [...temporaryAttackResults];
+
+        killedCellsCopy.forEach((cell: { x: number, y: number, status: string }) => {
+            for (let i = cell.x - 1; i <= cell.x + 1; i++) {
+                for (let j = cell.y - 1; j <= cell.y + 1; j++) {
+
+                    if (i >= 0 && i < BOARD_SIZE && j >= 0 && j < BOARD_SIZE) {
+if (!shots[j][i]) {
+                            temporaryAttackResults.push({ x: i, y: j, status: 'miss' });
+                            shots[j][i] = 'miss';
+                        }
+                    }
+                }
+            }
+        });
 
         return 'killed';
     }
     return 'shot';
 }
-
-
 
 export function processAttack(
     x: number,
@@ -77,8 +72,6 @@ export function processAttack(
 
     const result = evaluateShot(targetShipsMatrix, x, y, targetShots, game.temporaryAttackResults);
 
-    targetShots[y][x] = result;
-
     if (result === 'killed') {
         game[killedCounterName]++;
         console.log(`${killedCounterName}: ${game[killedCounterName]}`);
@@ -86,27 +79,19 @@ export function processAttack(
     return result;
 }
 
-function getRandomCoords(): [number, number] {
-    const x = Math.floor(Math.random() * BOARD_SIZE);
-    const y = Math.floor(Math.random() * BOARD_SIZE);
-    return [x, y];
-}
-
 export function selectRandomTarget(game: any, indexPlayer: number): [number, number] {
     const targetShots = indexPlayer
         ? game.secondPlayerShots
         : game.firstPlayerShots;
 
-
     while (true) {
         const [x, y] = getRandomCoords();
-
-
         if (!targetShots[y][x]) {
             return [x, y];
         }
     }
 }
+
 
 export function createAttackResponse(
     x: number,
@@ -130,6 +115,7 @@ type AttackResponseType = {
     id: 0;
 };
 
+
 export function createSurroundingMissesResponses(
     indexPlayer: number,
     game: any
@@ -148,16 +134,4 @@ export function createSurroundingMissesResponses(
         })
     );
     return responses;
-}
-
-export function addAdditionalAttackResultsToStorage(
-    indexPlayer: number,
-    game: any
-) {
-    const { temporaryAttackResults, firstPlayerShots, secondPlayerShots } = game;
-    const targetShots = indexPlayer ? secondPlayerShots : firstPlayerShots;
-
-    temporaryAttackResults.forEach((i: { x: number, y: number, status: string }) => {
-        targetShots[i.y][i.x] = i.status;
-    });
 }

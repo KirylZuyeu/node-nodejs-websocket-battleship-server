@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
 import { createTurnResponse, getWinnerNameIfFinished, createFinishGameResponse } from '../../services/gameService';
 import { createWinnersResponse, updateWinnerStats } from '../../services/playerService';
-import { processAttack, selectRandomTarget, createAttackResponse, addAdditionalAttackResultsToStorage, createSurroundingMissesResponses } from '../../services/attackService';
+import { processAttack, selectRandomTarget, createAttackResponse, createSurroundingMissesResponses } from '../../services/attackService';
 import { storage, userSocketMap, userSocketSet } from '../../services/storageService';
 
 
@@ -43,7 +43,6 @@ function handleBotTurn(game: any, socket: WebSocket) {
     }
 
     if (result === 'killed') {
-        addAdditionalAttackResultsToStorage(1, game);
         const responses = createSurroundingMissesResponses(1, game);
         responses.forEach((response) => socket.send(JSON.stringify(response)));
 
@@ -71,7 +70,6 @@ export function processPvpAttack(x: number, y: number, indexPlayer: number, game
     }
 
     if (result === 'killed') {
-        addAdditionalAttackResultsToStorage(indexPlayer, game);
         const responses = createSurroundingMissesResponses(indexPlayer, game);
         responses.forEach((response) => sendToPlayers(game, response));
 
@@ -98,7 +96,6 @@ export function processPveAttack(x: number, y: number, indexPlayer: number, game
     }
 
     if (result === 'killed') {
-        addAdditionalAttackResultsToStorage(indexPlayer, game);
         const responses = createSurroundingMissesResponses(indexPlayer, game);
         responses.forEach((response) => socket.send(JSON.stringify(response)));
 
